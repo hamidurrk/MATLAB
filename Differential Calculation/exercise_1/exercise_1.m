@@ -1,0 +1,202 @@
+% Exercise 1
+% Task 1
+
+rng(1);
+% a
+A = randi([-2, 9], [5, 3])
+
+% b
+b = A(:, 2)
+A(2, 3) = -5
+
+% c
+B = A(:, [3, 1, 2])
+
+% d
+C = A([3, 1, 2, 5, 4], :)
+
+% e
+rowSumA = sum(A, 2);
+colSumA = sum(A);    
+
+rowSumB = sum(B, 2); 
+colSumB = sum(B);    
+
+rowSumC = sum(C, 2) 
+colSumC = sum(C)
+
+% f
+sumRowSumA = sum(rowSumA);
+sumColSumA = sum(colSumA);
+
+sumRowSumB = sum(rowSumB);
+sumColSumB = sum(colSumB);
+
+sumRowSumC = sum(rowSumC);
+sumColSumC = sum(colSumC);
+
+% All of the sums are equal no matter how they are arranged. On top of
+% that it doesn't matter if we take the sum of all rows or columns because
+% it will be the same always.
+
+%% Exercise 1
+% Task 2
+clearvars
+close all
+clc
+
+rng(1);
+
+% a
+D = randi([-2, 9], 50, 30);
+elements_greater_than_4 = length(find(D > 4))
+
+% b
+M1 = randi(10, 10, 5);  
+M2 = randi(10, 5, 10);  
+
+lengthM1 = length(M1);
+sizeM1 = size(M1);
+numelM1 = numel(M1);
+
+lengthM2 = length(M2);
+sizeM2 = size(M2);
+numelM2 = numel(M2);
+
+disp("Results for M1 (10x5):");
+disp("Length: "); disp(lengthM1);
+disp("Size: "); disp(sizeM1);
+disp("Numel: "); disp(numelM1);
+
+disp("Results for M2 (5x10):");
+disp("Length: "); disp(lengthM2);
+disp("Size: "); disp(sizeM2);
+disp("Numel: "); disp(numelM2);
+
+% length() - returns the greatest dimension of the parameter matrix
+% size() - returns a vector consisting of the numbers of rows and cols
+% numel() - returns the total number of elements in the matrix
+
+A = randi([-2, 9], [5, 3])
+s = size(A, 2)
+
+%% Exercise 1
+% Task 3
+clearvars
+close all
+clc
+
+% b
+log(2 * 3) == log(2) + log(3)
+log(2 + 3) == log(2) + log(3)
+cos(pi/2) == 0
+% Here '==' is a relational operator that checks the equality of the both
+% side on left and right. It returns 1, 0, and 0 respectively 
+% (1 means True and 0 means False). 
+
+% c
+% Even though the 1st and second result is correct, the third one is not 
+% because in MATLAB pi is not the actual pi but just an approximation, 
+% that's why cos(pi/2) isn't exactly equal to 0.
+
+% d
+tol = 1e-12;
+x = linspace(0, pi, 10);
+
+% (i) 
+lhs1 = sin(3 * x);
+rhs1 = 3 * sin(x) - 4 * sin(x).^3;
+abs(lhs1 - rhs1) < tol
+
+% (ii) 
+lhs2 = abs(sin(x / 2));
+rhs2 = sqrt((1 - cos(x)) / 2);
+abs(lhs2 - rhs2) < tol
+
+% (iii) 
+x_tan = linspace(0, pi/2 - 0.01, 10);
+lhs3 = tan(3 * x_tan);
+rhs3 = (3 * tan(x_tan) - tan(x_tan).^3) ./ (1 - 3 * tan(x_tan).^2);
+abs(lhs3 - rhs3) < tol
+
+% BONUS
+% At x=pi/2, tax(x) approaches infinity because tan(x) is undefined at that
+% point. This leads to a division by zero in (iii), making the result
+% undefined.
+
+%% Exercise 1
+% Task 4
+clearvars
+close all
+clc
+
+rng(1);
+A = randi([-2, 9], [5, 3])
+
+% b
+abs(A) == 2         % i
+A > 6               % ii
+A(A > 6) = 100      % iii
+% command i: creates a matrix of size(A) and puts 1 wherever the statement
+%           holds True and puts 0 wherever it's False. 
+% command ii: does the same as 'command i'. 
+% command iii: it takes the original matrix and replaces those element with
+%           100 whose values are greater than 6. 
+
+% c
+X = A > 4
+elements_greater_than_4 = numel(X(X==1))
+
+%% Exercise 1
+% Task 5
+clearvars
+close all
+clc
+
+rng(1)
+% a
+x = 0:0.1:10;
+
+% b
+n = length(x);
+r = -0.5 + (0.5 + 0.5) * rand(1, n);
+
+% c
+y1a = r + 0;
+
+% d
+figure;
+plot(x, y1a, 'o');
+hold on;
+
+% e
+y1b = 0;
+plot(x, y1b * ones(size(x)), 'k--');
+
+% f
+b = 2;
+y2a = r + b;
+
+% g
+plot(x, y2a, 's');
+
+% h
+y2b = b;
+plot(x, y2b * ones(size(x)), 'r--');
+
+% i
+a = 0.7;
+y3a = r + a * x + b;
+
+% j
+plot(x, y3a, '^');
+
+% k
+y3b = a * x + b;
+plot(x, y3b, 'b--');
+
+xlabel('x');
+ylabel('y');
+legend({'y1a (r)', 'y1b = 0', 'y2a (r + b)', 'y2b = b', 'y3a (r + ax + b)', 'y3b = ax + b'}, 'Location', 'best');
+title('Plots of Random Data and Horizontal Lines');
+hold off;
