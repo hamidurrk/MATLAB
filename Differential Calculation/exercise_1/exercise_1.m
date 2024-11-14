@@ -200,3 +200,69 @@ ylabel('y');
 legend({'y1a (r)', 'y1b = 0', 'y2a (r + b)', 'y2b = b', 'y3a (r + ax + b)', 'y3b = ax + b'}, 'Location', 'best');
 title('Plots of Random Data and Horizontal Lines');
 hold off;
+
+%% Exercise 1
+% Task 6
+clearvars
+close all
+clc
+
+% a
+data = readmatrix("Differential Calculation\exercise_1\MES1E6.xlsx");
+data = data(:, [2:end]);
+
+% b
+t = data(1, :)
+A = data(2, :)
+
+figure;
+plot(t, A, 'o');
+hold on;
+% The data points seem to fit an exponential function such as e^-x
+
+% c, d
+A0 = 11.5;
+lambda = 0.324;
+t_x = [floor(min(t)):0.01:ceil(max(t))];
+A_t = A0 * exp(-lambda * t_x);
+plot(t_x, A_t)
+
+xlabel('t');
+ylabel('A(t)');
+legend({'A', ' A(t) = A_0 * exp(-lambda * t)'}, 'Location', 'best');
+title('Plot of Excel File Data and Fitting A Curve');
+hold off;
+
+%% Exercise 1
+% Task 7
+clearvars
+close all
+clc
+
+% a i
+age = input("Enter your age: ");
+
+% a iii
+name = input("Enter your name: ");
+
+% b ii
+a = 1.23;
+disp('The value of variable a is a.');
+disp(['The value of variable a is ', a]);
+disp(['The value of variable a is ', num2str(a)]);
+% The third approach works most reasonably. 
+% First one doesn't call the variable. Second one calls the variable but in
+% order to print to the console, we'll have to convert numbers to strings
+% and that's what the third approach does - it converts the value of the
+% variable to a string before printing to the console.
+
+% b v
+year = input("Enter your birth year: ");
+month = input("Enter your birth month: ");
+day = input("Enter your birth day: ");
+
+disp(['Your date of birth is: ', num2str(day), '.', num2str(month), '.', num2str(year)]);
+
+
+date = input("Enter your birthday as a vector like this [dd, mm, yyyy]: ");
+disp(['Your date of birth is: ', num2str(date(1)), '.', num2str(date(2)), '.', num2str(date(3))]);

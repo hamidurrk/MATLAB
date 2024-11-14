@@ -153,6 +153,7 @@ clearvars
 close all
 clc
 
+rng(1)
 % a
 x = 0:0.1:10;
 
@@ -162,3 +163,93 @@ r = -0.5 + (0.5 + 0.5) * rand(1, n);
 
 % c
 y1a = r + 0;
+
+% d
+figure;
+plot(x, y1a, 'o');
+hold on;
+
+% e
+y1b = 0;
+plot(x, y1b * ones(size(x)), 'k--');
+
+% f
+b = 2;
+y2a = r + b;
+
+% g
+plot(x, y2a, 's');
+
+% h
+y2b = b;
+plot(x, y2b * ones(size(x)), 'r--');
+
+% i
+a = 0.7;
+y3a = r + a * x + b;
+
+% j
+plot(x, y3a, '^');
+
+% k
+y3b = a * x + b;
+plot(x, y3b, 'b--');
+
+xlabel('x');
+ylabel('y');
+legend({'y1a (r)', 'y1b = 0', 'y2a (r + b)', 'y2b = b', 'y3a (r + ax + b)', 'y3b = ax + b'}, 'Location', 'best');
+title('Plots of Random Data and Horizontal Lines');
+hold off;
+
+%% Exercise 1
+% Task 6
+clearvars
+close all
+clc
+
+% a
+data = readmatrix("Differential Calculation\exercise_1\MES1E6.xlsx");
+data = data(:, [2:end]);
+
+% b
+t = data(1, :)
+A = data(2, :)
+
+figure;
+plot(t, A, 'o');
+hold on;
+% The data points seem to fit an exponential function such as e^-x
+
+% c, d
+A0 = 11.5;
+lambda = 0.324;
+t_x = [floor(min(t)):0.01:ceil(max(t))];
+A_t = A0 * exp(-lambda * t_x);
+plot(t_x, A_t)
+
+xlabel('t');
+ylabel('A(t)');
+legend({'A', ' A(t) = A_0 * exp(-lambda * t)'}, 'Location', 'best');
+title('Plot of Excel File Data and Fitting A Curve');
+hold off;
+
+%% Exercise 1
+% Task 7
+clearvars
+close all
+clc
+
+% a i
+% age = input("Enter your age: ");
+
+% a iii
+% name = input("Enter your name: ");
+
+% b ii
+a = 1.23;
+disp('The value of variable a is a.');
+disp(['The value of variable a is ', a]);
+disp(['The value of variable a is ', num2str(a)]);
+% The third approach works most reasonably. 
+% First one doesn't call the variable. Second one calls the variable but in
+% order to print to 
