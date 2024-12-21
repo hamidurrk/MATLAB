@@ -167,7 +167,7 @@ close all
 clc
 
 % a
-data = readmatrix("Differential Calculation\exercise_3\MES3E4.xlsx");
+data = readmatrix("C:\Users\hamid\OneDrive\Documents\MATLAB\Differential Calculation\exercise_3\MES3E4.xlsx");
 X = data(:, 1);
 Y = data(:, 2);
 
