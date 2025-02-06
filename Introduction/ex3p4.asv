@@ -1,0 +1,22 @@
+function [value1, value2, value3] = ex3p4(A, B, C)
+    % Step 1: Concatenate A and B side-by-side, then concatenate with C
+    value1 = vertcat([A, B], C);
+    
+    % Step 2: Select rows 2 to 4 (since the original matrix has only 3 rows, selecting row 2 to 3)
+    value2 = value1(2:3, :); 
+    
+    % Step 3: Extract values within the open interval (5,15)
+    value3 = value1((value1 > 5) & (value1 < 15));
+    value3 = value3(:); % Ensure column vector format
+end
+
+
+mat1 = randi(9, 3, 3)
+mat2 = randi(9, 3, 3)
+mat3 = randi(9, 3, 6)
+
+value1 = vertcat([mat1, mat2], mat3)
+
+value2 = value1(2:4, :)
+
+value3 = value1((value1 > 5) & (value1 < 15))
