@@ -6,9 +6,9 @@ This repository contains MATLAB scripts and functions for various numerical, mat
 
 The repository is structured as follows:
 
-[Basics of University Mathematics](./Basics%20of%20University%20Mathematics/): contains 35 MATLAB assignments in 5 exercise scripts.
-[Differential Calculation](./Differential%20Calculation/): contains 35 MATLAB assignments in 6 exercise scripts.
-[Differential Equations](./Differential%20Equations/): ongoing...
+- [Basics of University Mathematics](./Basics%20of%20University%20Mathematics/): contains 35 MATLAB assignments in 5 exercise scripts.
+- [Differential Calculation](./Differential%20Calculation/): contains 35 MATLAB assignments in 6 exercise scripts.
+- [Differential Equations](./Differential%20Equations/): ongoing...
 
 ## Getting Started
 
