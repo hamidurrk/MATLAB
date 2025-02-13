@@ -1,0 +1,186 @@
+%% Exercise 4
+% Task 1
+clearvars
+clc
+close all
+
+% b
+odefun = @(t,y) [y(2); -y(1)];
+tspan = [0 10];
+y0 = [1; 0];
+[T, Y] = ode45(odefun, tspan, y0);
+
+figure;
+plot(T, Y(:,1), 'b-');
+hold on;
+
+syms y(t)
+Dy = diff(y);
+ode = diff(y,t,2) + y == 0;
+cond = [y(0)==1, Dy(0)==0];
+ySol(t) = dsolve(ode, cond);
+
+ySym = double(ySol(T));
+plot(T, ySym, 'ro');
+
+title("1(b) Solution of y'' + y = 0");
+xlabel('t');
+ylabel('y(t)');
+legend('Numerical', 'Symbolic (dsolve)');
+
+disp('Sizes of T and Y:');
+disp(['Size of T: ', num2str(size(T))]);
+disp(['Size of Y: ', num2str(size(Y))]);
+
+
+%% c
+clearvars
+clc
+close all
+
+% 1(c)
+odefun_c = @(t,y) [y(2); -y(1) - 2*y(2)];
+y0_c = [1; 0];
+[t_c, y_c] = ode45(odefun_c, [0 10], y0_c);
+
+figure;
+plot(t_c, y_c(:,1));
+title('1(c) Solution of y"" + 2y'' + y = 0');
+xlabel('t');
+ylabel('y(t)');
+
+%% Exercise 4
+% Task 2
+clearvars
+clc
+close all
+
+% a
+syms y(t);
+eqn = diff(y,t,2) + y == 0;
+V = odeToVectorField(eqn);
+odefun_symbolic = matlabFunction(V, 'Vars', {'t','Y'});
+
+disp('Generated function for 2(a):');
+disp(odefun_symbolic);
+
+% b
+
+[T_sym, Y_sym] = ode45(odefun_symbolic, [0 10], [1; 0]);
+
+figure;
+plot(T_sym, Y_sym(:,1), 'b-');
+title('2(b) Solution using Symbolic Conversion');
+xlabel('t');
+ylabel('y(t)');
+legend('Numerical');
+
+
+%% c
+clearvars; 
+close all;
+clc;
+
+syms y(t);
+eqn = diff(y,t,3) + 2*diff(y,t) + y == 0;
+V = odeToVectorField(eqn);
+odefun_3rd = matlabFunction(V, 'Vars', {'t','Y'});
+
+y0_3rd = [1; 1; 0];
+[T_3rd, Y_3rd] = ode45(odefun_3rd, [0 10], y0_3rd);
+
+figure;
+plot(T_3rd, Y_3rd(:,1));
+title('2(c) Solution of y^{(3)} + 2y'' + y = 0');
+xlabel('t');
+ylabel('y(t)');
+
+
+% d
+clearvars
+clc
+close al
+
+%% Exercise 3
+% Task 3
+clearvars
+clc
+close all
+
+
+% a
+x = linspace(0, 2*pi, 100); 
+y = sin(x);
+
+figure;
+hold on;
+plot(x, y, 'b', 'LineWidth', 1.5); % Plot the sine function
+h = plot(x(1), y(1), 'ro', 'MarkerSize', 8, 'MarkerFaceColor', 'r'); % Marker
+
+for i = 1:length(x)
+    set(h, 'XData', x(i), 'YData', y(i));
+    pause(0.05); % Pause for animation effect
+end
+
+hold off;
+%% b
+clc; clear; close all;
+syms s(t) k m g
+
+m_val = 1;       % Mass (kg)
+k_val = 0.5;     % Air resistance coefficient
+g_val = 9.81;    % Gravitational acceleration (m/s²)
+s0 = 100;        % Initial position (m)
+v0 = 0;          % Initial velocity (m/s)
+v_up = 20;       % Initial velocity (m/s) (upward throw)
+v_down = -20;    % Initial velocity (m/s) (downward throw)
+
+eq1 = m * diff(s, t, 2) + m * g == 0;  % Without air resistance
+eq2 = m * diff(s, t, 2) + k * diff(s, t) + m * g == 0; % With air resistance
+
+Ds = diff(s, t);
+
+sol1 = dsolve(eq1, s(0) == s0, Ds(0) == v0);  
+sol2 = dsolve(eq2, s(0) == s0, Ds(0) == v0);  
+sol3 = dsolve(eq2, s(0) == s0, Ds(0) == v_up);
+sol4 = dsolve(eq2, s(0) == s0, Ds(0) == v_down);
+
+sol1_func = matlabFunction(subs(sol1, [m, g], [m_val, g_val]), 'Vars', t);
+sol2_func = matlabFunction(subs(sol2, [k, m, g], [k_val, m_val, g_val]), 'Vars', t);
+sol3_func = matlabFunction(subs(sol3, [k, m, g], [k_val, m_val, g_val]), 'Vars', t);
+sol4_func = matlabFunction(subs(sol4, [k, m, g], [k_val, m_val, g_val]), 'Vars', t);
+
+t_vals = linspace(0, 5, 100);
+s1_vals = sol1_func(t_vals);
+s2_vals = sol2_func(t_vals);
+s3_vals = sol3_func(t_vals);
+s4_vals = sol4_func(t_vals);
+
+figure;
+hold on;
+plot(t_vals, s1_vals, 'r', 'LineWidth', 1.5); % No Air Resistance
+plot(t_vals, s2_vals, 'b', 'LineWidth', 1.5); % With Air Resistance
+plot(t_vals, s3_vals, 'g', 'LineWidth', 1.5); % Thrown Upward
+plot(t_vals, s4_vals, 'm', 'LineWidth', 1.5); % Thrown Downward
+
+h1 = plot(t_vals(1), s1_vals(1), 'ro', 'MarkerSize', 10, 'MarkerFaceColor', 'r');
+h2 = plot(t_vals(1), s2_vals(1), 'bo', 'MarkerSize', 10, 'MarkerFaceColor', 'b');
+h3 = plot(t_vals(1), s3_vals(1), 'go', 'MarkerSize', 10, 'MarkerFaceColor', 'g');
+h4 = plot(t_vals(1), s4_vals(1), 'mo', 'MarkerSize', 10, 'MarkerFaceColor', 'm');
+
+xlabel('Time (s)');
+ylabel('Position (m)');
+legend('No Air Resistance', 'With Air Resistance', 'Thrown Upward', 'Thrown Downward');
+grid on;
+hold off;
+
+% Animation Loop
+for i = 1:length(t_vals)
+    set(h1, 'XData', t_vals(i), 'YData', s1_vals(i));
+    set(h2, 'XData', t_vals(i), 'YData', s2_vals(i));
+    set(h3, 'XData', t_vals(i), 'YData', s3_vals(i));
+    set(h4, 'XData', t_vals(i), 'YData', s4_vals(i));
+    
+    pause(0.05);
+end
+
