@@ -147,6 +147,7 @@ clearvars
 clc
 close all
 
+% a
 m = 1;
 k = 0.5;
 g = 9.81;
@@ -211,6 +212,80 @@ while tCurrent <= tEnd
     pause(tStep);
     
     tCurrent = tCurrent + tStep;
+end
+
+hold off;
+
+%% b
+clearvars
+clc
+close all
+
+x = linspace(0, 2*pi, 100);
+y = sin(x);
+
+figure;
+plot(x, y, 'b', 'LineWidth', 2); 
+hold on;
+grid on;
+xlabel('x');
+ylabel('f(x) = sin(x)');
+title('Animated Point with Upward Vector');
+axis([0 2*pi -1.5 1.5]);
+
+point = plot(x(1), y(1), 'ro', 'MarkerSize', 8, 'MarkerFaceColor', 'r');
+quiverHandle = quiver(x(1), y(1), 0, 1, 'r', 'LineWidth', 2, 'MaxHeadSize', 0.5);
+
+% Animation loop
+for i = 1:length(x)
+    set(point, 'XData', x(i), 'YData', y(i));
+    
+    set(quiverHandle, 'XData', x(i), 'YData', y(i), 'UData', 0, 'VData', 1);
+    
+    pause(0.05); 
+end
+
+hold off;
+
+%% c
+clearvars
+clc
+close all
+
+% If we obtain the normal vector at each point, then we will be able to
+% change the vector according to the normal vectors direction.
+% Derivative of f(x) give the tangent vector and by rotating it 90 degrees
+% counter clockwise, we'll get the normal vector.
+
+x = linspace(0, 2*pi, 100);
+y = sin(x);
+
+figure;
+plot(x, y, 'b', 'LineWidth', 2); 
+hold on;
+grid on;
+xlabel('x');
+ylabel('f(x) = sin(x)');
+title('Animated Point with Changing Vector');
+axis([0 2*pi -1.5 1.5]);
+
+point = plot(x(1), y(1), 'ro', 'MarkerSize', 8, 'MarkerFaceColor', 'r');
+quiverHandle = quiver(x(1), y(1), 0, 1, 'r', 'LineWidth', 2, 'MaxHeadSize', 0.5);
+
+for i = 1:length(x)
+    dx = cos(x(i)); 
+    normal_x = -dx;
+    normal_y = 1;
+    
+    norm_factor = sqrt(normal_x^2 + normal_y^2);
+    normal_x = normal_x / norm_factor;
+    normal_y = normal_y / norm_factor;
+
+    set(point, 'XData', x(i), 'YData', y(i));
+    
+    set(quiverHandle, 'XData', x(i), 'YData', y(i), 'UData', normal_x, 'VData', normal_y);
+    
+    pause(0.05); 
 end
 
 hold off;

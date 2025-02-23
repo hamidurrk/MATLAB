@@ -77,9 +77,9 @@ legend('Numerical');
 
 
 %% c
-clearvars; 
-close all;
-clc;
+clearvars
+clc 
+close all
 
 syms y(t);
 eqn = diff(y,t,3) + 2*diff(y,t) + y == 0;
@@ -96,91 +96,200 @@ xlabel('t');
 ylabel('y(t)');
 
 
-% d
+%% d i
 clearvars
 clc
-close al
+close all
 
-%% Exercise 3
+syms y(t);
+eqn_i = t*diff(y,t,2) + t^2*diff(y,t) + y == 0;
+try
+    V_i = odeToVectorField(eqn_i);
+    odefun_i = matlabFunction(V_i, 'Vars', {'t','Y'});
+    [T_i, Y_i] = ode45(odefun_i, [1 5], [1; 0]);
+    
+    figure;
+    plot(T_i, Y_i(:,1), 'b-');
+    title('2(d)(i) Numerical Solution of t y"" + t^2 y'' + y = 0');
+    xlabel('t');
+    ylabel('y(t)');
+catch
+    disp('Symbolic conversion failed for 2(d)(i)');
+end
+
+% d ii
+syms y(t);
+eqn_ii = t^2*diff(y,t,2) + t*diff(y,t) + y == 0;
+V_ii = odeToVectorField(eqn_ii);
+odefun_ii = matlabFunction(V_ii, 'Vars', {'t','Y'});
+
+% Numerical solution
+[T_ii, Y_ii] = ode45(odefun_ii, [1 10], [1; 0]);
+
+% Symbolic solution
+dy = diff(y);
+cond_ii = [y(1) == 1, dy(1) == 0];
+ySol_ii(t) = dsolve(eqn_ii, cond_ii);
+ySym_ii = double(ySol_ii(T_ii));
+
+figure;
+plot(T_ii, Y_ii(:,1), 'b-');
+hold on;
+plot(T_ii, ySym_ii, 'ro');
+title('2(d)(ii) Solution of t^2 y"" + t y'' + y = 0');
+xlabel('t');
+ylabel('y(t)');
+legend('Numerical', 'Symbolic');
+
+%% Exercise 4
 % Task 3
 clearvars
 clc
 close all
 
-
 % a
-x = linspace(0, 2*pi, 100); 
+m = 1;
+k = 0.5;
+g = 9.81;
+
+tspan = [0, 10];  
+
+y0 = [100; 0];
+
+% Without air resistance
+f_noDrag = @(t,y) [ y(2); -g ];           
+
+% With air resistance
+f_withDrag = @(t,y) [ y(2); -g - (k/m)*y(2) ];
+
+[t_noDrag, y_noDrag]     = ode45(f_noDrag,    tspan, y0);
+[t_withDrag, y_withDrag] = ode45(f_withDrag,  tspan, y0);
+
+% position vs. time plot
+figure('Name','Falling Object - Position vs Time','NumberTitle','off');
+hold on; grid on;
+plot(t_noDrag,    y_noDrag(:,1),    'b-','LineWidth',2, 'DisplayName','No Drag');
+plot(t_withDrag,  y_withDrag(:,1),  'r-','LineWidth',2, 'DisplayName','With Drag');
+xlabel('Time (s)');
+ylabel('Position s(t) (m)');
+title('Falling Object with/without Air Resistance');
+legend('Location','Best');
+hold off;
+
+%% Animation
+
+figure('Name','Falling Object Animation','NumberTitle','off');
+hold on; grid on;
+axis([tspan(1), tspan(2), 0, 110]);
+xlabel('Time (s)');
+ylabel('Height (m)');
+title('Animation: Falling Object (Upward = Positive)');
+
+plot(t_noDrag,    y_noDrag(:,1),    'b--','HandleVisibility','off');
+plot(t_withDrag,  y_withDrag(:,1),  'r--','HandleVisibility','off');
+
+markerNoDrag   = plot(t_noDrag(1),   y_noDrag(1,1),   'bo','MarkerFaceColor','b','MarkerSize',8,...
+                      'DisplayName','No Drag');
+markerWithDrag = plot(t_withDrag(1), y_withDrag(1,1), 'ro','MarkerFaceColor','r','MarkerSize',8,...
+                      'DisplayName','With Drag');
+legend('No Drag','With Drag','Location','Best');
+
+idxNoDrag   = 1;  
+idxWithDrag = 1;  
+
+tCurrent = 0;     
+tEnd     = max(t_noDrag(end), t_withDrag(end));
+
+tStep = 0.01;  
+
+while tCurrent <= tEnd
+    sNoDrag   = interp1(t_noDrag,   y_noDrag(:,1),   tCurrent, 'linear','extrap');
+    sWithDrag = interp1(t_withDrag, y_withDrag(:,1), tCurrent, 'linear','extrap');
+    
+    set(markerNoDrag,   'XData', tCurrent, 'YData', sNoDrag);
+    set(markerWithDrag, 'XData', tCurrent, 'YData', sWithDrag);
+    
+    pause(tStep);
+    
+    tCurrent = tCurrent + tStep;
+end
+
+hold off;
+
+%% b
+
+clc; clear; close all;
+
+% Define the x values and corresponding y values for the sine function
+x = linspace(0, 2*pi, 100);
 y = sin(x);
 
+% Create a figure and plot the sine function
 figure;
+plot(x, y, 'b', 'LineWidth', 2); % Plot the sine wave
 hold on;
-plot(x, y, 'b', 'LineWidth', 1.5); % Plot the sine function
-h = plot(x(1), y(1), 'ro', 'MarkerSize', 8, 'MarkerFaceColor', 'r'); % Marker
+grid on;
+xlabel('x');
+ylabel('f(x) = sin(x)');
+title('Animated Point with Upward Vector');
+axis([0 2*pi -1.5 1.5]);
 
+% Initialize the moving point and vector
+point = plot(x(1), y(1), 'ro', 'MarkerSize', 8, 'MarkerFaceColor', 'r');
+quiverHandle = quiver(x(1), y(1), 0, 1, 'r', 'LineWidth', 2, 'MaxHeadSize', 0.5);
+
+% Animation loop
 for i = 1:length(x)
-    set(h, 'XData', x(i), 'YData', y(i));
+    % Update point position
+    set(point, 'XData', x(i), 'YData', y(i));
+    
+    % Update vector position
+    set(quiverHandle, 'XData', x(i), 'YData', y(i), 'UData', 0, 'VData', 1);
+    
     pause(0.05); % Pause for animation effect
 end
 
 hold off;
-%% b
+
+%% c
+
 clc; clear; close all;
-syms s(t) k m g
 
-m_val = 1;       % Mass (kg)
-k_val = 0.5;     % Air resistance coefficient
-g_val = 9.81;    % Gravitational acceleration (m/s²)
-s0 = 100;        % Initial position (m)
-v0 = 0;          % Initial velocity (m/s)
-v_up = 20;       % Initial velocity (m/s) (upward throw)
-v_down = -20;    % Initial velocity (m/s) (downward throw)
-
-eq1 = m * diff(s, t, 2) + m * g == 0;  % Without air resistance
-eq2 = m * diff(s, t, 2) + k * diff(s, t) + m * g == 0; % With air resistance
-
-Ds = diff(s, t);
-
-sol1 = dsolve(eq1, s(0) == s0, Ds(0) == v0);  
-sol2 = dsolve(eq2, s(0) == s0, Ds(0) == v0);  
-sol3 = dsolve(eq2, s(0) == s0, Ds(0) == v_up);
-sol4 = dsolve(eq2, s(0) == s0, Ds(0) == v_down);
-
-sol1_func = matlabFunction(subs(sol1, [m, g], [m_val, g_val]), 'Vars', t);
-sol2_func = matlabFunction(subs(sol2, [k, m, g], [k_val, m_val, g_val]), 'Vars', t);
-sol3_func = matlabFunction(subs(sol3, [k, m, g], [k_val, m_val, g_val]), 'Vars', t);
-sol4_func = matlabFunction(subs(sol4, [k, m, g], [k_val, m_val, g_val]), 'Vars', t);
-
-t_vals = linspace(0, 5, 100);
-s1_vals = sol1_func(t_vals);
-s2_vals = sol2_func(t_vals);
-s3_vals = sol3_func(t_vals);
-s4_vals = sol4_func(t_vals);
+x = linspace(0, 2*pi, 100);
+y = sin(x);
 
 figure;
+plot(x, y, 'b', 'LineWidth', 2); 
 hold on;
-plot(t_vals, s1_vals, 'r', 'LineWidth', 1.5); % No Air Resistance
-plot(t_vals, s2_vals, 'b', 'LineWidth', 1.5); % With Air Resistance
-plot(t_vals, s3_vals, 'g', 'LineWidth', 1.5); % Thrown Upward
-plot(t_vals, s4_vals, 'm', 'LineWidth', 1.5); % Thrown Downward
-
-h1 = plot(t_vals(1), s1_vals(1), 'ro', 'MarkerSize', 10, 'MarkerFaceColor', 'r');
-h2 = plot(t_vals(1), s2_vals(1), 'bo', 'MarkerSize', 10, 'MarkerFaceColor', 'b');
-h3 = plot(t_vals(1), s3_vals(1), 'go', 'MarkerSize', 10, 'MarkerFaceColor', 'g');
-h4 = plot(t_vals(1), s4_vals(1), 'mo', 'MarkerSize', 10, 'MarkerFaceColor', 'm');
-
-xlabel('Time (s)');
-ylabel('Position (m)');
-legend('No Air Resistance', 'With Air Resistance', 'Thrown Upward', 'Thrown Downward');
 grid on;
-hold off;
+xlabel('x');
+ylabel('f(x) = sin(x)');
+title('Animated Point with Changing Vector');
+axis([0 2*pi -1.5 1.5]);
 
-% Animation Loop
-for i = 1:length(t_vals)
-    set(h1, 'XData', t_vals(i), 'YData', s1_vals(i));
-    set(h2, 'XData', t_vals(i), 'YData', s2_vals(i));
-    set(h3, 'XData', t_vals(i), 'YData', s3_vals(i));
-    set(h4, 'XData', t_vals(i), 'YData', s4_vals(i));
+% Initialize the moving point and vector
+point = plot(x(1), y(1), 'ro', 'MarkerSize', 8, 'MarkerFaceColor', 'r');
+quiverHandle = quiver(x(1), y(1), 0, 1, 'r', 'LineWidth', 2, 'MaxHeadSize', 0.5);
+
+% Animation loop
+for i = 1:length(x)
+    % Compute the normal vector at x(i)
+    dx = cos(x(i)); % Derivative f'(x)
+    normal_x = -dx;
+    normal_y = 1;
     
-    pause(0.05);
+    % Normalize the normal vector
+    norm_factor = sqrt(normal_x^2 + normal_y^2);
+    normal_x = normal_x / norm_factor;
+    normal_y = normal_y / norm_factor;
+
+    % Update point position
+    set(point, 'XData', x(i), 'YData', y(i));
+    
+    % Update vector position and direction
+    set(quiverHandle, 'XData', x(i), 'YData', y(i), 'UData', normal_x, 'VData', normal_y);
+    
+    pause(0.05); % Pause for animation effect
 end
 
+hold off;
