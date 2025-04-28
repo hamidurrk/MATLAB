@@ -1,4 +1,4 @@
-clc; clearvars; close all;
+clearvars; close all;
 
 % ---- Problem data ----
 A = 3; B = -2; C = 3;
@@ -68,17 +68,103 @@ end
 zg = f(xg,yg);
 figure;
 surf(xg,yg,zg, 'DisplayName', 'Function Surface'); hold on;
-plot3(history_xy(1,:), history_xy(2,:), history_f, 'r-o','LineWidth',2);
+
+% Plot initial and final points
+plot3(history_xy(1,1), history_xy(2,1), history_f(1), 'ro', ...
+    'MarkerSize', 10, 'MarkerFaceColor', 'r', 'DisplayName', 'Initial Point');
+plot3(history_xy(1,end), history_xy(2,end), history_f(end), 'go', ...
+    'MarkerSize', 10, 'MarkerFaceColor', 'g', 'DisplayName', 'Final Point');
+
 xlabel('x'); ylabel('y'); zlabel('f(x,y)');
 title('Newton path with numerical derivatives and dynamic \alpha');
 view(-30, 30); 
 colorbar;
 grid on;
+legend('Location', 'best');
 
 % contour + path
 figure;
 contour(xg,yg,zg,50); hold on;
-plot(history_xy(1,:), history_xy(2,:), 'r-o','LineWidth',2);
+% Plot path line
+plot(history_xy(1,:), history_xy(2,:), 'b-','LineWidth',2);
+
+% Plot initial and final points
+plot(history_xy(1,1), history_xy(2,1), 'ro', ...
+    'MarkerSize', 10, 'MarkerFaceColor', 'r', 'DisplayName', 'Initial Point');
+plot(history_xy(1,end), history_xy(2,end), 'go', ...
+    'MarkerSize', 10, 'MarkerFaceColor', 'g', 'DisplayName', 'Final Point');
+
 xlabel('x'); ylabel('y');
 title('Contour + Newton path');
 grid on;
+legend('Location', 'northwest');
+
+% Create table data
+n_rows = length(history_xy(1,:));
+table_data = cell(n_rows, 7);
+
+% Fill initial row (k=0)
+table_data{1,1} = 0;
+table_data{1,2} = sprintf('(%.5f, %.5f)', history_xy(1,1), history_xy(2,1));
+g0 = [dfdx_fd(history_xy(1,1), history_xy(2,1)); 
+      dfdy_fd(history_xy(1,1), history_xy(2,1))];
+table_data{1,3} = sprintf('(%.5f, %.5f)', g0(1), g0(2));
+d0 = g0 / norm(g0);
+table_data{1,4} = sprintf('(%.5f, %.5f)', d0(1), d0(2));
+table_data{1,5} = '-';
+table_data{1,6} = '-';
+table_data{1,7} = '-';
+
+% Fill remaining rows
+for i = 2:n_rows
+    table_data{i,1} = i-1;
+    table_data{i,2} = sprintf('(%.5f, %.5f)', history_xy(1,i-1), history_xy(2,i-1));
+    
+    % Calculate gradient at current point
+    g = [dfdx_fd(history_xy(1,i-1), history_xy(2,i-1)); 
+         dfdy_fd(history_xy(1,i-1), history_xy(2,i-1))];
+    table_data{i,3} = sprintf('(%.5f, %.5f)', g(1), g(2));
+    
+    % Normalized gradient
+    d = g / norm(g);
+    table_data{i,4} = sprintf('(%.5f, %.5f)', d(1), d(2));
+    
+    % For the last row, calculate what the next point would be
+    if i == n_rows
+        % Form phi'(alpha)
+        phi_prime = @(alpha) ...
+            dfdx_fd(history_xy(1,i-1) - alpha*d(1), history_xy(2,i-1) - alpha*d(2)) * d(1) + ...
+            dfdy_fd(history_xy(1,i-1) - alpha*d(1), history_xy(2,i-1) - alpha*d(2)) * d(2);
+        
+        % Bracket and solve for alpha
+        a_lo = 0;  f_lo = phi_prime(a_lo);
+        a_hi = 1;  f_hi = phi_prime(a_hi);
+        while f_lo * f_hi > 0
+            a_hi = 2*a_hi;
+            f_hi = phi_prime(a_hi);
+            if a_hi > 1e6
+                break;
+            end
+        end
+        alpha_opt = fzero(phi_prime, [a_lo, a_hi]);
+        
+        % Calculate theoretical next point
+        x_next = history_xy(1,i-1) - alpha_opt * d(1);
+        y_next = history_xy(2,i-1) - alpha_opt * d(2);
+        
+        table_data{i,5} = sprintf('%.5f', alpha_opt);
+        table_data{i,6} = sprintf('(%.5f, %.5f)', x_next, y_next);
+        table_data{i,7} = sprintf('%.4e', norm([x_next; y_next] - history_xy(:,i-1)));
+    else
+        diff = history_xy(:,i) - history_xy(:,i-1);
+        alpha = norm(diff) / norm(d);
+        table_data{i,5} = sprintf('%.5f', alpha);
+        table_data{i,6} = sprintf('(%.5f, %.5f)', history_xy(1,i), history_xy(2,i));
+        table_data{i,7} = sprintf('%.4e', norm(diff));
+    end
+end
+
+% Display the table
+fprintf('\nOptimization Progress:\n');
+headers = {'Iteration', '(x,y)', '∇f(x,y)', '∇f(x,y) normalized', 'α', 'next(x,y)', 'Error'};
+disp(array2table(table_data, 'VariableNames', headers));
