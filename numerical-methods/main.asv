@@ -1,0 +1,23 @@
+% Constants and initial values
+A = 3; 
+B = -2; 
+C = 3;
+
+x_0 = 5; 
+y_0 = 7;
+
+iter_vector = [x_0; y_0]; 
+
+% Function
+syms x y; 
+f = A*x^2 - B*x*y + C*y^2 + x - y; 
+grad_f = gradient(f, [x, y]); 
+disp('Gradient of the function:');
+disp(grad_f);
+
+grad_val = subs(grad_f, [x, y], iter_vector'); 
+grad_norm = grad_val / norm(grad_val);
+
+alpha = 0.1;
+
+iter_result = iter_vector - alpha * grad_norm
