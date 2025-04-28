@@ -42,10 +42,8 @@ for i = 1:max_iterations
     df_dalpha = diff(f_alpha, alpha);
     alpha_optimal = solve(df_dalpha == 0, alpha);
     
-    % Calculate next point
+    % Calculate next point and function value
     x_next = double(iter_vector - alpha_optimal * grad_norm);
-    
-    % Calculate function value at new point
     f_next = double(subs(f, [x, y], x_next'));
     
     % Store history
@@ -53,10 +51,6 @@ for i = 1:max_iterations
     f_history = [f_history, f_next];
     
     % Check convergence
-    % if i > 1 && abs(f_history(end) - f_history(end-1)) < tolerance
-    %     fprintf('Converged after %d iterations\n', i);
-    %     break;
-    % end
     if i > 1
         position_change = norm(x_next - iter_vector);
         if position_change < tolerance
@@ -106,15 +100,3 @@ title('Convergence History (Log Scale)');
 xlabel('Iteration');
 ylabel('Change in Function Value');
 grid on;
-
-% Plot 2D path
-figure;
-plot(iteration_history(1,:), iteration_history(2,:), 'r.-');
-title('Optimization Path (2D View)');
-xlabel('x');
-ylabel('y');
-grid on;
-hold on;
-plot(iteration_history(1,1), iteration_history(2,1), 'go', 'DisplayName', 'Start');
-plot(iteration_history(1,end), iteration_history(2,end), 'ro', 'DisplayName', 'End');
-
