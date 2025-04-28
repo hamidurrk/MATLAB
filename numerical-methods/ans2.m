@@ -5,7 +5,7 @@ A = 3; B = -2; C = 3;
 f  = @(x,y) A*x.^2 - B*x.*y + C*y.^2 + x - y;  % objective function
 
 % forward-difference approximations
-h = 1e-6;
+h = 1e-5;
 dfdx_fd = @(x,y) (f(x+h,y) - f(x,y)) / h;
 dfdy_fd = @(x,y) (f(x,y+h) - f(x,y)) / h;
 
@@ -56,6 +56,11 @@ for k = 1:max_iter
         fprintf('Converged after %d iterations.\n', k);
         break
     end
+    
+    % if norm([x_new + 0.25; y_new - 0.25]) < tol
+    %     fprintf('Reached the desired point (-0.25, 0.25) after %d iterations.\n', k);
+    %     break
+    % end
     
     % prepare for next iteration
     x = x_new;
