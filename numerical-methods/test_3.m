@@ -113,7 +113,7 @@ for i = 1:length(h_values)
     x_min_values(i) = x_numerical;
     y_min_values(i) = y_numerical;
     fprintf('h = %e → Iterations = %d\n', h, iter);
-    disp(['Numerical Minimum:  (', num2str(x_numerical), ', ', num2str(y_numerical), ') in ', num2str(iter_numerical), ' iterations']);
+    disp(['Numerical Minimum:  (', num2str(x_numerical), ', ', num2str(y_numerical), ') in ', num2str(iter), ' iterations']);
 end
 
 % Compute absolute errors
@@ -136,3 +136,25 @@ xlabel('h (log scale)');
 ylabel('|y_{numerical} - y_{target}| (log scale)');
 title('Logarithmic Absolute Error in y_{numerical} vs h');
 yline(1e-5, '--', 'Threshold', 'LabelHorizontalAlignment', 'left', 'LabelVerticalAlignment', 'bottom'); % Add dashed line
+
+% Plot Number of Iterations vs h (Discrete Plot)
+figure;
+semilogx(h_values, iterations, '-o', 'MarkerSize', 8, 'LineWidth', 1.5); % Use semilogx for discrete points
+xlabel('h (log scale)');
+ylabel('Number of Iterations');
+title('Number of Iterations vs h');
+grid on;
+
+% Adjust y-axis range for better readability
+ylim([0, max(iterations) + 4]); % Extend the y-axis range slightly above the maximum value
+
+% Highlight the area where absolute error exceeds 10^-5
+% hold on;
+% threshold_indices = find(x_errors > 1e-5 | y_errors > 1e-5); % Find indices where error exceeds threshold
+% if ~isempty(threshold_indices)
+%     for idx = threshold_indices
+%         xline(h_values(idx), '--r', 'LineWidth', 1.5); % Add vertical red dashed lines
+%     end
+% end
+legend('Iterations', 'Error > 10^{-5}');
+hold off;
