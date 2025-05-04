@@ -61,7 +61,7 @@ for k = 1:max_iter
     %     fprintf('Reached the desired point (-0.25, 0.25) after %d iterations.\n', k);
     %     break
     % end
-    
+     
     % prepare for next iteration
     x = x_new;
     y = y_new;
