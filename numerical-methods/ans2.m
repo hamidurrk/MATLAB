@@ -47,7 +47,6 @@ for k = 1:max_iter
     x_new = x - alpha_opt * d(1);
     y_new = y - alpha_opt * d(2);
     
-    % record history
     history_xy(:,end+1) = [x_new; y_new];
     history_f(end+1)    = f(x_new,y_new);
     
