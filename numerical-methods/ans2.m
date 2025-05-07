@@ -61,7 +61,6 @@ for k = 1:max_iter
     %     break
     % end
      
-    % prepare for next iteration
     x = x_new;
     y = y_new;
 end
